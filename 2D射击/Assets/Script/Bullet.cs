@@ -4,31 +4,35 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    float g = -10;//重力加速度
-    Vector3 speed;//初速度向量
-    Vector3 Gravity;//重力向量
-    Vector3 hit_point;
-    float dTime = 0;
-    float Bullet_T = 0;
-    float time;
+    private float Gravity = -10;//这个代表重力加速度
 
+    private Vector3 MoveSpeed;//初速度向量
+
+    private Vector3 GritySpeed = Vector3.zero;//重力的速度向量，t时为0
+    private float dTime;//已经过去的时间
+    private Vector3 currentAngle;
 
     void Start()
     {
-        hit_point = new Vector3(Trajectory.trajectory.hit_Point_x.position.x, Trajectory.trajectory.hit_Point_y.position.y,Trajectory.trajectory.canvas.planeDistance);
-        time = Trajectory.trajectory.time;
-        //speed = new Vector3((hit_point .x- transform.position.x) / time, (hit_point.y - transform.position.y) / time - 0.5f * g * time, (Trajectory.trajectory.canvas.planeDistance) / time);
-        //Gravity = Vector3.zero;//重力初始速度为0
+
+        //通过一个公式计算出初速度向量
+
+        //角度*力度
+
+        MoveSpeed = Quaternion.Euler(new Vector3(Trajectory.trajectory.Angle, 0, 0)) * Vector3.forward * Trajectory.trajectory.bullet_speed/10;
+        currentAngle = Vector3.zero;
     }
-  
+
     void FixedUpdate()
     {
-        Bullet_T += (time / 50);
-        transform.position = Vector3.Lerp( Camera_Management.camera_Management.fire_point, hit_point, Bullet_T);
-        //Gravity.y = g * (dTime += Time.fixedDeltaTime);
-        ////模拟位移
+        //v = at ;
+      
+        GritySpeed.y = (Gravity/10) * (dTime += Time.fixedDeltaTime);
+        GritySpeed.x= Trajectory.trajectory.wind_Speed/2 * (dTime += Time.fixedDeltaTime);
 
-        //transform.Translate(speed * Time.fixedDeltaTime);
-        //transform.Translate(Gravity * Time.fixedDeltaTime);
+        //位移模拟轨迹
+        transform.position += (MoveSpeed + GritySpeed) * Time.fixedDeltaTime;
+        currentAngle.z = Mathf.Atan((MoveSpeed.y + GritySpeed.y) / MoveSpeed.x) * Mathf.Rad2Deg;
+        transform.eulerAngles = currentAngle;
     }
 }

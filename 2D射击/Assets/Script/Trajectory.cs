@@ -13,23 +13,25 @@ public class Trajectory : MonoBehaviour
 
 
     public Canvas canvas;
-    public GameObject bullet_fx;
+    public GameObject bullet;
     public GameObject hit_fx;
     public Transform hit_Point_y;//y轴弹着点(动态)
     public Transform hit_Point_x; //x轴弹着点(动态)
     Vector3 target_point=Vector3.zero;
     public float time { get; private set; }//子弹飞行时间
-    float wind_Speed;//风速
-    float distance=1000;//距离
-    const float bullet_speed=700;//子弹速度
+    public float wind_Speed { get; private set; }//风速
+
+    public float bullet_speed;//子弹速度
+    public float Angle;
+    float distance=800;//距离
     const int g = 10;
 
     float offset_x;
+    float offset_y;
 
     float Fire_number = 0f;
     float fraction = 0f;
     float Hit_rate;//命中率
-
     GameObject Instantiate_item;
 
     private void Awake()
@@ -66,11 +68,24 @@ public class Trajectory : MonoBehaviour
         {
             hit_Point_x.gameObject.SetActive(false);
         }
-
         time = distance / bullet_speed;
-        offset_x = (g * time * time / 2) * (100 / distance);//下坠
+
+        float updatetime = 0f;
+        float drop = 0;
+        float windage_yaw = 0;
+        float rising = 0;
+        while (updatetime < time)
+        {
+            drop += ((g/10)* updatetime) *0.02f;
+            windage_yaw += (wind_Speed/2 * updatetime) *0.02f;
+            updatetime += 0.02f;
+        }
+        canvas.planeDistance = distance / 10;
+        rising = distance/10 * Mathf.Tan(Mathf.Abs(Angle) * Mathf.Deg2Rad);
+        offset_x = rising - drop;//下坠
+        offset_y= windage_yaw;
     }
-  
+
     private void Update()
     {
         if (UI_Management.ui_Management.sniper_State == false)
@@ -87,14 +102,14 @@ public class Trajectory : MonoBehaviour
             }
             hit_Point_y.gameObject.SetActive(true);
 
-            hit_Point_y.position = new Vector3(hit_Point_y.position.x, Camera.main.transform.position.y + (-offset_x), hit_Point_y.position.z);
-            hit_Point_x.position = new Vector3(Camera.main.transform.position.x + (wind_Speed / 2f), hit_Point_x.position.y, hit_Point_x.position.z);
+            hit_Point_y.position = new Vector3(hit_Point_y.position.x, Camera.main.transform.position.y + (offset_x), hit_Point_y.position.z);
+            hit_Point_x.position = new Vector3(Camera.main.transform.position.x + (offset_y), hit_Point_x.position.y, hit_Point_x.position.z);
         }
     }
 
     public void Fire()
     {
-        Instantiate_item=Instantiate(bullet_fx, Camera.main.transform.position, Camera.main.transform.rotation);
+        Instantiate_item = Instantiate(bullet, Camera.main.transform.position, Camera.main.transform.rotation);
         target_point = new Vector3(hit_Point_x.position.x, hit_Point_y.position.y, canvas.planeDistance);
         Invoke("Target_Detection", time);
         Debug.DrawRay(Camera.main.transform.position, target_point, Color.red);

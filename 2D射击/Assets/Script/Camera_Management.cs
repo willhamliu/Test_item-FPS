@@ -95,15 +95,15 @@ public class Camera_Management : MonoBehaviour
             {
                 if (recoil_T < 1)
                 {
-                    recoil_T += 0.25f;
+                    recoil_T += 0.2f;
                     transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, recoil_poison, transform.position.z), recoil_T);
                 }
                 else
                 {
-                    calibration_T += 0.25f;
+                    calibration_T += 0.2f;
                     transform.position = Vector3.Lerp(new Vector3(transform.position.x, recoil_poison, transform.position.z), back_poison, calibration_T);
                 }
-                if (calibration_T == 0.5f)
+                if (calibration_T == 0.6f)
                 {
                     Offset();
                     break;
@@ -117,12 +117,12 @@ public class Camera_Management : MonoBehaviour
             {
                 if (recoil_T < 1)
                 {
-                    recoil_T += 0.25f;
+                    recoil_T += 0.2f;
                     transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, recoil_poison, transform.position.z), recoil_T);
                 }
                 else
                 {
-                    calibration_T += 0.25f;
+                    calibration_T += 0.2f;
                     transform.position = Vector3.Lerp(new Vector3(transform.position.x, recoil_poison, transform.position.z), back_poison, calibration_T);
                 }
                 if (calibration_T == 1)

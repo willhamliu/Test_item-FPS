@@ -69,6 +69,8 @@ public class UI_Management : Player_Control
             Camera_Management.camera_Management.Recoil();
 
             Trajectory.trajectory.Fire();
+
+
             StartCoroutine(_Recoil());
 
             if (bullet_count > 1)//如果开枪后枪里还有子弹就需要播放拉枪栓的声音
@@ -236,12 +238,12 @@ public class UI_Management : Player_Control
         {
             if (recoil_T < 1)
             {
-                recoil_T += 0.25f;
+                recoil_T += 0.2f;
                 sights.rectTransform.sizeDelta = Vector2.Lerp(start_HW, new Vector2(5000, 5000), recoil_T);
             }
             else
             {
-                calibration_T += 0.25f;
+                calibration_T += 0.2f;
                 sights.rectTransform.sizeDelta = Vector2.Lerp(new Vector2(5000, 5000), start_HW, calibration_T);
             }
             yield return new WaitForSeconds(Time.deltaTime);
