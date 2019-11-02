@@ -5,10 +5,11 @@ using UnityEngine.UI;
 
 public class Trajectory : MonoBehaviour
 {
-    public Text wind_Speed_value;
-    public Text Hit_rate_value;
     public static Trajectory trajectory;
 
+    public Text wind_Speed_value;
+    public Text hit_rate_value;
+    public Text distance_value;
     public AudioClip aud_Hit;//击中靶机声音
 
 
@@ -17,14 +18,15 @@ public class Trajectory : MonoBehaviour
     public GameObject hit_fx;
     public Transform hit_Point_y;//y轴弹着点(动态)
     public Transform hit_Point_x; //x轴弹着点(动态)
-    Vector3 target_point=Vector3.zero;
     public float time { get; private set; }//子弹飞行时间
     public float wind_Speed { get; private set; }//风速
 
     public float bullet_speed;//子弹速度
-    public float Angle;
-    float distance=800;//距离
-    const int g = 10;
+    public float Angle;//发射角度
+
+    public float distance { get; private set; } = 800;//距离
+    const int Gravity = 10;
+    private Vector3 target_point = Vector3.zero;
 
     float offset_x;
     float offset_y;
@@ -40,6 +42,10 @@ public class Trajectory : MonoBehaviour
         {
             trajectory = this;
         }
+
+        distance_value.text = distance.ToString()+"m";
+        canvas.planeDistance = distance / 10;
+
 
         float range_X = Random.Range(0, 3);
         switch (range_X)
@@ -76,14 +82,13 @@ public class Trajectory : MonoBehaviour
         float rising = 0;
         while (updatetime < time)
         {
-            drop += ((g/10)* updatetime) *0.02f;
+            drop += ((Gravity/10)* updatetime) *0.02f;
             windage_yaw += (wind_Speed/2 * updatetime) *0.02f;
             updatetime += 0.02f;
         }
-        canvas.planeDistance = distance / 10;
         rising = distance/10 * Mathf.Tan(Mathf.Abs(Angle) * Mathf.Deg2Rad);
-        offset_x = rising - drop;//下坠
-        offset_y= windage_yaw;
+        offset_y = rising - drop;//下坠
+        offset_x = windage_yaw;
     }
 
     private void Update()
@@ -102,18 +107,16 @@ public class Trajectory : MonoBehaviour
             }
             hit_Point_y.gameObject.SetActive(true);
 
-            hit_Point_y.position = new Vector3(hit_Point_y.position.x, Camera.main.transform.position.y + (offset_x), hit_Point_y.position.z);
-            hit_Point_x.position = new Vector3(Camera.main.transform.position.x + (offset_y), hit_Point_x.position.y, hit_Point_x.position.z);
+            hit_Point_y.position = new Vector3(hit_Point_y.position.x, Camera.main.transform.position.y + (offset_y), hit_Point_y.position.z);
+            hit_Point_x.position = new Vector3(Camera.main.transform.position.x + (offset_x), hit_Point_x.position.y, hit_Point_x.position.z);
         }
     }
 
     public void Fire()
     {
-        Instantiate_item = Instantiate(bullet, Camera.main.transform.position, Camera.main.transform.rotation);
+        Instantiate_item = Instantiate(bullet,UI_Management.ui_Management.Fire_point, Camera.main.transform.rotation);
         target_point = new Vector3(hit_Point_x.position.x, hit_Point_y.position.y, canvas.planeDistance);
         Invoke("Target_Detection", time);
-        Debug.DrawRay(Camera.main.transform.position, target_point, Color.red);
-
     }
     public void Target_Detection()
     {
@@ -131,7 +134,6 @@ public class Trajectory : MonoBehaviour
             }
         }
         Hit_rate =(int)((fraction / Fire_number)*100f);
-        Hit_rate_value.text = Hit_rate.ToString()+"%";
-        Destroy(Instantiate_item);
+        hit_rate_value.text = Hit_rate.ToString()+"%";
     }
 }

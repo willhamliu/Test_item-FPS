@@ -25,6 +25,8 @@ public class UI_Management : Player_Control
     public Slider Breath_Time;
     public Image Breath_ui_color;
 
+    public Vector3 Fire_point { get; private set; }
+
 
     private void Awake()
     {
@@ -63,13 +65,13 @@ public class UI_Management : Player_Control
     public void Fire()//开火
     {
         //开火前需要判断3个条: 满足射速 不在换子弹状态 枪内有子弹
+        Fire_point = Camera.main.transform.position;
         if (Time.time > prevFire + fireCD && Time.time> reload_complete && bullet_count > 0)
         {
-            Camera_Management.camera_Management.calibration = true;
-            Camera_Management.camera_Management.Recoil();
-
             Trajectory.trajectory.Fire();
 
+            Camera_Management.camera_Management.calibration = true;
+            Camera_Management.camera_Management.Recoil();
 
             StartCoroutine(_Recoil());
 

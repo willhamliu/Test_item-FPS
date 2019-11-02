@@ -14,21 +14,24 @@ public class Bullet : MonoBehaviour
 
     void Start()
     {
-
         //通过一个公式计算出初速度向量
-
         //角度*力度
-
         MoveSpeed = Quaternion.Euler(new Vector3(Trajectory.trajectory.Angle, 0, 0)) * Vector3.forward * Trajectory.trajectory.bullet_speed/10;
         currentAngle = Vector3.zero;
+    }
+    void Update()
+    {
+        if (transform.position.z >= Trajectory.trajectory.distance/10)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     void FixedUpdate()
     {
         //v = at ;
-      
         GritySpeed.y = (Gravity/10) * (dTime += Time.fixedDeltaTime);
-        GritySpeed.x= Trajectory.trajectory.wind_Speed/2 * (dTime += Time.fixedDeltaTime);
+        GritySpeed.x= Trajectory.trajectory.wind_Speed/2 * (dTime);
 
         //位移模拟轨迹
         transform.position += (MoveSpeed + GritySpeed) * Time.fixedDeltaTime;
